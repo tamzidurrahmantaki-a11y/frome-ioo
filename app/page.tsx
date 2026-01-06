@@ -3,6 +3,10 @@ import { DashboardPreview } from "@/components/landing/dashboard-preview"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TrackInput } from "@/components/landing/track-input"
+import { LogoCloud } from "@/components/landing/logo-cloud"
+import { FeaturesSection } from "@/components/landing/features-section"
+import { PricingSection } from "@/components/landing/pricing-section"
+import { Footer } from "@/components/landing/footer"
 
 export default function Home() {
   return (
@@ -36,22 +40,17 @@ export default function Home() {
 
       </main>
 
+      {/* Logo Cloud */}
+      <LogoCloud />
+
+      {/* Features Section */}
+      <FeaturesSection />
+
+      {/* Pricing Section */}
+      <PricingSection />
+
       {/* Footer */}
-      <footer className="border-t border-white/5 py-12 bg-[#0A0A0A]">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-xl font-bold tracking-wider text-white">
-            FROME.IO
-          </div>
-          <div className="flex gap-8 text-sm text-gray-500">
-            <a href="#" className="hover:text-white transition-colors">Home</a>
-            <a href="#" className="hover:text-white transition-colors">About</a>
-            <a href="#" className="hover:text-white transition-colors">Pricing</a>
-          </div>
-          <div className="text-sm text-gray-600">
-            © 2024 Frome.io. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
