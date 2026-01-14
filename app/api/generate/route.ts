@@ -23,21 +23,27 @@ export async function POST(request: Request) {
             validUrl = 'https://' + validUrl
         }
 
-        let slug = customSlug?.trim()
+        // Construct the new format: custom-name/random-id
+        const cleanName = (customSlug || 'link')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9-]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
 
-        if (slug) {
-            // Check if custom slug is taken
-            const { data: existing } = await supabase
-                .from('links')
-                .select('id')
-                .eq('short_slug', slug)
-                .single()
+        const randomId = nanoid(6)
+        const slug = `${cleanName}/${randomId}`
 
-            if (existing) {
-                return NextResponse.json({ error: 'This custom link is already taken' }, { status: 400 })
-            }
-        } else {
-            slug = nanoid(6)
+        // Check if custom slug is taken (unlikely with random ID but good for safety)
+        const { data: existing } = await supabase
+            .from('links')
+            .select('id')
+            .eq('short_slug', slug)
+            .single()
+
+        if (existing) {
+            // Re-generate if hit (extremely rare)
+            return NextResponse.json({ error: 'Generation conflict, please try again' }, { status: 400 })
         }
 
         const { data, error } = await supabase

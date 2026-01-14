@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { Calendar, Tag, Clock, Navigation2 } from "lucide-react"
+import { Calendar, Tag, Clock, Navigation2, Search, MousePointer2, PieChart } from "lucide-react"
 import { AnalyticsGraph } from "@/components/dashboard/analytics-graph"
 import { getDashboardData } from "@/lib/data"
 import { RealtimeLinkList } from "@/components/dashboard/realtime-link-list"
 import { DateRangePicker } from "@/components/dashboard/date-range-picker"
 import { RealtimeDashboard } from "@/components/dashboard/realtime-dashboard"
+import { EmptyState } from "@/components/dashboard/empty-state"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -38,7 +39,7 @@ export default async function DashboardPage({
 
                     {/* Top Section: Real-time Graph and Stats */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                        <div className="lg:col-span-8 bg-[#F8F9FA] rounded-xl p-8 border border-[#F1F3F5]">
+                        <div className="lg:col-span-8 bg-[#F8F9FA] rounded-xl p-4 md:p-8 border border-[#F1F3F5]">
                             <div className="flex items-center justify-between mb-8">
                                 <h3 className="text-sm font-bold text-black uppercase tracking-widest">Growth Analytics</h3>
                                 <div className="flex items-center gap-2">
@@ -50,12 +51,12 @@ export default async function DashboardPage({
                         </div>
 
                         <div className="lg:col-span-4 flex flex-col gap-6">
-                            <div className="bg-[#F8F9FA] p-8 rounded-xl border border-[#F1F3F5] flex flex-col justify-center">
+                            <div className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5] flex flex-col justify-center">
                                 <p className="text-sm font-semibold text-black mb-1">Last hour clicks:</p>
-                                <p className="text-6xl font-semibold text-black tracking-tighter">{stats.lastHour}</p>
+                                <p className="text-4xl md:text-6xl font-semibold text-black tracking-tighter">{stats.lastHour}</p>
                             </div>
 
-                            <div className="bg-[#F8F9FA] p-8 rounded-xl border border-[#F1F3F5] flex-1">
+                            <div className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5] flex-1">
                                 <p className="text-sm font-semibold text-black mb-6">Top performing tags:</p>
                                 <div className="space-y-3">
                                     {links.slice(0, 3).map((link) => (
@@ -65,7 +66,12 @@ export default async function DashboardPage({
                                         </div>
                                     ))}
                                     {links.length === 0 && (
-                                        <p className="text-xs text-gray-400 italic">No links generated yet</p>
+                                        <EmptyState
+                                            title="No links"
+                                            description="Your top performing links will appear here once you start tracking."
+                                            icon={Search}
+                                            className="py-8 bg-white"
+                                        />
                                     )}
                                 </div>
                             </div>
@@ -97,8 +103,8 @@ export default async function DashboardPage({
                             { title: 'Operating system', data: demographics.os },
                             { title: 'Browser', data: demographics.browser }
                         ].map((section) => (
-                            <div key={section.title} className="bg-[#F8F9FA] p-8 rounded-xl border border-[#F1F3F5]">
-                                <p className="text-sm font-bold text-black mb-10 px-2">{section.title}</p>
+                            <div key={section.title} className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5]">
+                                <p className="text-sm font-bold text-black mb-6 md:mb-10 px-2">{section.title}</p>
                                 <div className="space-y-2">
                                     {section.data.map((item) => (
                                         <div key={item.name} className="bg-white p-3.5 rounded-lg flex items-center justify-between shadow-sm border border-[#F1F3F5]/50 group hover:border-black/5 transition-colors">
@@ -112,7 +118,12 @@ export default async function DashboardPage({
                                         </div>
                                     ))}
                                     {section.data.length === 0 && (
-                                        <p className="text-[11px] text-gray-400 italic px-2">No demographic data yet</p>
+                                        <EmptyState
+                                            title={`No ${section.title.toLowerCase()} data`}
+                                            description="Start collecting clicks to see demographic insights."
+                                            icon={PieChart}
+                                            className="py-10 bg-white"
+                                        />
                                     )}
                                 </div>
                             </div>

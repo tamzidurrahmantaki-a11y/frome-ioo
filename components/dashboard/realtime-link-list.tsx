@@ -92,19 +92,21 @@ export function RealtimeLinkList({ initialLinks }: RealtimeLinkListProps) {
     return (
         <div className="space-y-3">
             {links.map((link) => (
-                <div key={link.id} className="group bg-[#F8F9FA] p-2 rounded-2xl items-center grid grid-cols-12 gap-4 border border-transparent hover:border-[#F1F3F5] transition-all">
-                    <div className="col-span-12 bg-white rounded-xl p-4 grid grid-cols-12 items-center gap-6 shadow-sm border border-[#F1F3F5]/50 hover:shadow-md transition-shadow">
+                <div key={link.id} className="group bg-[#F8F9FA] p-1 md:p-2 rounded-2xl items-center grid grid-cols-12 gap-2 md:gap-4 border border-transparent hover:border-[#F1F3F5] transition-all">
+                    <div className="col-span-12 bg-white rounded-xl p-4 md:p-4 grid grid-cols-12 items-center gap-4 md:gap-6 shadow-sm border border-[#F1F3F5]/50 hover:shadow-md transition-shadow">
                         {/* Link Icon & Details */}
-                        <div className="col-span-12 md:col-span-3 flex items-center gap-4">
-                            <div className="bg-black p-3 rounded-xl shrink-0 text-white shadow-lg shadow-black/10">
+                        <div className="col-span-12 md:col-span-3 flex items-center gap-3 md:gap-4">
+                            <div className="bg-black p-2.5 md:p-3 rounded-xl shrink-0 text-white shadow-lg shadow-black/10">
                                 <Tag className="w-4 h-4 transform rotate-90" />
                             </div>
                             <div className="min-w-0">
-                                <p className="font-bold text-black text-sm truncate uppercase tracking-tight leading-none mb-1.5">
+                                <p className="font-bold text-black text-sm truncate uppercase tracking-tight leading-none mb-1 md:mb-1.5">
                                     {link.title || link.short_slug}
                                 </p>
                                 <div className="flex items-center gap-1">
-                                    <p className="text-[11px] text-gray-400 font-medium truncate">https://{link.short_slug}.net</p>
+                                    <p className="text-[10px] md:text-[11px] text-gray-400 font-medium truncate">
+                                        {typeof window !== 'undefined' ? window.location.host.replace('www.', '') : 'frome.io'}/{link.short_slug}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -133,7 +135,7 @@ export function RealtimeLinkList({ initialLinks }: RealtimeLinkListProps) {
                         </div>
 
                         {/* Interactive Actions - Increased Spacing to avoid overlap */}
-                        <div className="col-span-12 lg:col-span-3 flex items-center justify-between lg:justify-end gap-6 pl-4">
+                        <div className="col-span-12 lg:col-span-3 flex items-center justify-between lg:justify-end gap-4 md:gap-6 md:pl-4 mt-2 lg:mt-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-50">
                             <SmartLink slug={link.short_slug} className="w-full xl:w-[180px]" />
                             <div className="shrink-0">
                                 <LinkActions link={link} />

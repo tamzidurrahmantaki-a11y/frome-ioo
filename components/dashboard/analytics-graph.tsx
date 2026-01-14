@@ -59,9 +59,9 @@ export function AnalyticsGraph({ initialData, startDate, endDate }: AnalyticsGra
 
     // Always render the graph, showing a zero-line if no clicks exist
     return (
-        <div className="h-[450px] w-full">
+        <div className="h-[300px] md:h-[450px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
+                <AreaChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
                     <defs>
                         <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#00C975" stopOpacity={0.3} />
@@ -72,10 +72,10 @@ export function AnalyticsGraph({ initialData, startDate, endDate }: AnalyticsGra
                         dataKey="day"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#9ca3af', fontSize: 11, fontWeight: 700 }}
+                        tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
                         dy={15}
-                        interval={0}
-                        padding={{ left: 30, right: 30 }}
+                        interval="preserveStartEnd"
+                        padding={{ left: 10, right: 10 }}
                         textAnchor="middle"
                         className="font-outfit uppercase"
                     />

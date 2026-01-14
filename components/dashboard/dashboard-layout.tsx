@@ -86,8 +86,11 @@ function DashboardSidebarInternal({ children, user: initialUser }: { children: R
         )
     }
 
-    const SidebarContent = () => (
-        <aside className="w-20 bg-black rounded-xl flex flex-col items-center py-10 shrink-0 shadow-2xl shadow-black/20 h-[calc(100vh-3rem)] sticky top-6">
+    const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+        <aside className={cn(
+            "bg-black rounded-xl flex flex-col items-center py-10 shrink-0 shadow-2xl shadow-black/20",
+            isMobile ? "w-24 h-full" : "w-20 h-[calc(100vh-3rem)] sticky top-6"
+        )}>
             {/* Logo */}
             <div className="text-white font-semibold text-3xl mb-14 tracking-tighter select-none cursor-pointer" onClick={() => router.push('/dashboard')}>F.</div>
 
@@ -121,10 +124,12 @@ function DashboardSidebarInternal({ children, user: initialUser }: { children: R
                         >
                             <item.icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
 
-                            {/* Tooltip on hover */}
-                            <div className="absolute left-[75px] px-3 py-1.5 bg-black text-white text-[10px] font-semibold uppercase tracking-widest rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-[100] pointer-events-none after:content-[''] after:absolute after:right-full after:top-1/2 after:-translate-y-1/2 after:border-8 after:border-transparent after:border-r-black">
-                                {item.title}
-                            </div>
+                            {/* Tooltip on hover - only on desktop */}
+                            {!isMobile && (
+                                <div className="absolute left-[75px] px-3 py-1.5 bg-black text-white text-[10px] font-semibold uppercase tracking-widest rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-[100] pointer-events-none after:content-[''] after:absolute after:right-full after:top-1/2 after:-translate-y-1/2 after:border-8 after:border-transparent after:border-r-black">
+                                    {item.title}
+                                </div>
+                            )}
                         </button>
                     )
                 })}
@@ -141,29 +146,29 @@ function DashboardSidebarInternal({ children, user: initialUser }: { children: R
     )
 
     return (
-        <div className="flex min-h-screen w-full bg-[#ffffff] md:p-6 gap-8">
+        <div className="flex min-h-screen w-full bg-[#ffffff] md:p-6 gap-0 lg:gap-8">
             {/* Desktop Sidebar (Sticky) */}
             <div className="hidden lg:block relative">
                 <SidebarContent />
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col min-w-0 p-4 md:p-0">
+            <main className="flex-1 flex flex-col min-w-0 p-4 md:p-6 lg:p-0">
                 {/* Header */}
-                <header className="h-20 flex items-center justify-between mb-8">
+                <header className="h-20 flex items-center justify-between mb-2 md:mb-8">
                     <div className="flex items-center gap-4">
                         {/* Mobile Toggle */}
                         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
                             <SheetTrigger asChild>
-                                <button className="lg:hidden p-2 text-black hover:bg-gray-100 rounded-xl transition-colors">
+                                <button className="lg:hidden p-2 -ml-2 text-black hover:bg-gray-100 rounded-xl transition-colors">
                                     <Menu className="w-6 h-6" />
                                 </button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="p-6 bg-transparent border-none w-fit shadow-none">
-                                <SidebarContent />
+                            <SheetContent side="left" className="p-4 bg-transparent border-none w-fit shadow-none outline-none">
+                                <SidebarContent isMobile />
                             </SheetContent>
                         </Sheet>
-                        <h1 className="text-xl md:text-2xl font-semibold text-black tracking-tight leading-none">
+                        <h1 className="text-xl md:text-2xl font-semibold text-black tracking-tight leading-none truncate max-w-[150px] sm:max-w-none">
                             Hello, {toSentenceCase(profile?.full_name || initialUser?.email?.split('@')[0]) || 'User'}
                         </h1>
                     </div>

@@ -14,7 +14,9 @@ export function SmartLink({ slug, className }: SmartLinkProps) {
     const [copied, setCopied] = useState(false)
     const getFullUrl = () => {
         if (typeof window === 'undefined') return ''
-        return `${window.location.protocol}//${window.location.host}/${slug}`
+        const host = window.location.host.replace('www.', '')
+        const protocol = window.location.protocol
+        return `${protocol}//${host}/${slug}`
     }
 
     const handleCopy = async (e: React.MouseEvent) => {
@@ -24,7 +26,7 @@ export function SmartLink({ slug, className }: SmartLinkProps) {
         try {
             await navigator.clipboard.writeText(getFullUrl())
             setCopied(true)
-            toast.success("Link copied to clipboard!")
+            toast.success("Link copied!")
             setTimeout(() => setCopied(false), 2000)
         } catch (err) {
             toast.error("Failed to copy link")
@@ -37,6 +39,8 @@ export function SmartLink({ slug, className }: SmartLinkProps) {
         if (fullUrl) window.open(fullUrl, '_blank')
     }
 
+    const [namePart, idPart] = slug.split('/')
+
     return (
         <div
             className={cn(
@@ -46,9 +50,17 @@ export function SmartLink({ slug, className }: SmartLinkProps) {
             onClick={handleCopy}
             title="Click to copy"
         >
-            <div className="flex items-center gap-2 min-w-0">
-                <span className="text-[11px] font-bold text-white tracking-widest truncate">
-                    https://frome.io/{slug}
+            <div className="flex items-center gap-1 min-w-0">
+                <span className="text-[10px] font-bold text-white/40 tracking-widest uppercase">
+                    {typeof window !== 'undefined' ?
+                        window.location.host.replace('www.', '') :
+                        'frome.io'}/
+                </span>
+                <span className="text-[11px] font-bold text-[#00C975] tracking-widest truncate">
+                    {namePart}
+                </span>
+                <span className="text-[11px] font-bold text-white/60 tracking-widest">
+                    /{idPart}
                 </span>
             </div>
 

@@ -21,10 +21,15 @@ export function Navbar() {
                     </Link>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4">
                     <Link href="/login">
-                        <Button className="bg-[#00C975] hover:bg-[#00C975]/90 text-black font-semibold rounded-md px-6">
-                            Sign up
+                        <Button variant="ghost" className="text-zinc-400 hover:text-white font-semibold text-sm hover:bg-white/5 px-4 md:px-6">
+                            Sign in
+                        </Button>
+                    </Link>
+                    <Link href="/login?mode=signup">
+                        <Button className="bg-[#00C975] hover:bg-[#00C975]/90 text-black font-bold text-sm rounded-xl px-5 md:px-8 h-10 shadow-[0_4px_14px_0_rgba(0,201,117,0.39)] transition-all duration-200">
+                            Get Started
                         </Button>
                     </Link>
                 </div>

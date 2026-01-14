@@ -104,16 +104,28 @@ export function CreateLinkModal() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1">Custom Back-half (Optional)</label>
-                            <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">frome.io/</div>
-                                <Input
-                                    placeholder="my-custom-slug"
-                                    className="h-12 pl-[4.5rem] bg-gray-50/50 border-none rounded-xl focus:ring-1 focus:ring-black text-black placeholder:text-gray-400 font-medium"
-                                    value={customSlug}
-                                    onChange={(e) => setCustomSlug(e.target.value)}
-                                />
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-1">Custom Name</label>
+                            <Input
+                                placeholder="my-campaign"
+                                className="h-12 bg-gray-50/50 border-none rounded-xl focus:ring-1 focus:ring-black text-black placeholder:text-gray-400 font-medium"
+                                value={customSlug}
+                                onChange={(e) => setCustomSlug(e.target.value)}
+                            />
+
+                            <div className="bg-black/5 rounded-xl p-4 border border-black/5">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Live Preview</p>
+                                <div className="text-sm font-medium text-black truncate flex items-center gap-1">
+                                    <span className="text-gray-400 truncate">
+                                        {typeof window !== 'undefined' ?
+                                            window.location.host.replace('www.', '') :
+                                            'frome.io'}/
+                                    </span>
+                                    <span className="text-[#00C975] font-bold truncate underline underline-offset-4 decoration-2 decoration-[#00C975]/30">
+                                        {customSlug || 'custom-name'}
+                                    </span>
+                                    <span className="text-gray-300">/xxxxxx</span>
+                                </div>
                             </div>
                         </div>
 
