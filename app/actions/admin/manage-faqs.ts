@@ -1,20 +1,19 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 import { revalidatePath } from 'next/cache'
 
 export async function getFaqs() {
     try {
         const supabase = await createClient()
-
         const { data, error } = await supabase
             .from('faqs')
             .select('*')
             .order('order_index', { ascending: true })
 
         if (error) throw error
-
         return { success: true, data }
     } catch (error) {
         console.error('Error fetching FAQs:', error)
@@ -22,14 +21,10 @@ export async function getFaqs() {
     }
 }
 
-export async function createFaq(faqData: {
-    question: string
-    answer: string
-}) {
+export async function createFaq(faqData: { question: string; answer: string }) {
     try {
         await requireAdmin()
-
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         // Get the highest order_index
         const { data: faqs } = await supabase
@@ -48,9 +43,8 @@ export async function createFaq(faqData: {
 
         if (error) throw error
 
+        revalidatePath('/admin/support')
         revalidatePath('/support')
-        revalidatePath('/admin/content')
-
         return { success: true, data }
     } catch (error) {
         console.error('Error creating FAQ:', error)
@@ -58,15 +52,10 @@ export async function createFaq(faqData: {
     }
 }
 
-export async function updateFaq(id: string, faqData: {
-    question?: string
-    answer?: string
-    is_active?: boolean
-}) {
+export async function updateFaq(id: string, faqData: any) {
     try {
         await requireAdmin()
-
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('faqs')
@@ -77,9 +66,8 @@ export async function updateFaq(id: string, faqData: {
 
         if (error) throw error
 
+        revalidatePath('/admin/support')
         revalidatePath('/support')
-        revalidatePath('/admin/content')
-
         return { success: true, data }
     } catch (error) {
         console.error('Error updating FAQ:', error)
@@ -90,8 +78,7 @@ export async function updateFaq(id: string, faqData: {
 export async function deleteFaq(id: string) {
     try {
         await requireAdmin()
-
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { error } = await supabase
             .from('faqs')
@@ -100,9 +87,8 @@ export async function deleteFaq(id: string) {
 
         if (error) throw error
 
+        revalidatePath('/admin/support')
         revalidatePath('/support')
-        revalidatePath('/admin/content')
-
         return { success: true }
     } catch (error) {
         console.error('Error deleting FAQ:', error)
@@ -111,52 +97,5 @@ export async function deleteFaq(id: string) {
 }
 
 export async function toggleFaqActive(id: string, isActive: boolean) {
-    try {
-        await requireAdmin()
-
-        const supabase = await createClient()
-
-        const { data, error } = await supabase
-            .from('faqs')
-            .update({ is_active: isActive })
-            .eq('id', id)
-            .select()
-            .single()
-
-        if (error) throw error
-
-        revalidatePath('/support')
-        revalidatePath('/admin/content')
-
-        return { success: true, data }
-    } catch (error) {
-        console.error('Error toggling FAQ active:', error)
-        return { success: false, error: 'Failed to toggle FAQ active' }
-    }
-}
-
-export async function reorderFaqs(faqIds: string[]) {
-    try {
-        await requireAdmin()
-
-        const supabase = await createClient()
-
-        // Update order_index for each FAQ
-        const updates = faqIds.map((id, index) =>
-            supabase
-                .from('faqs')
-                .update({ order_index: index })
-                .eq('id', id)
-        )
-
-        await Promise.all(updates)
-
-        revalidatePath('/support')
-        revalidatePath('/admin/content')
-
-        return { success: true }
-    } catch (error) {
-        console.error('Error reordering FAQs:', error)
-        return { success: false, error: 'Failed to reorder FAQs' }
-    }
+    return updateFaq(id, { is_active: isActive })
 }

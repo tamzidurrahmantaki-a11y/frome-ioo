@@ -30,7 +30,7 @@ export default async function DashboardPage({
 
     return (
         <RealtimeDashboard>
-            <div className="space-y-12 pb-20 bg-white">
+            <div className="space-y-12 pb-20 bg-background">
                 {/* Header Area */}
                 <div className="px-4">
                     <div className="flex justify-start mb-6">
@@ -39,9 +39,9 @@ export default async function DashboardPage({
 
                     {/* Top Section: Real-time Graph and Stats */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                        <div className="lg:col-span-8 bg-[#F8F9FA] rounded-xl p-4 md:p-8 border border-[#F1F3F5]">
+                        <div className="lg:col-span-8 bg-card rounded-xl p-4 md:p-8 border border-border">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-sm font-bold text-black uppercase tracking-widest">Growth Analytics</h3>
+                                <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">Growth Analytics</h3>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-[#00C975] rounded-full animate-pulse" />
                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Live</span>
@@ -51,18 +51,18 @@ export default async function DashboardPage({
                         </div>
 
                         <div className="lg:col-span-4 flex flex-col gap-6">
-                            <div className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5] flex flex-col justify-center">
-                                <p className="text-sm font-semibold text-black mb-1">Last hour clicks:</p>
-                                <p className="text-4xl md:text-6xl font-semibold text-black tracking-tighter">{stats.lastHour}</p>
+                            <div className="bg-card p-6 md:p-8 rounded-xl border border-border flex flex-col justify-center">
+                                <p className="text-sm font-semibold text-foreground mb-1">Last hour clicks:</p>
+                                <p className="text-4xl md:text-6xl font-semibold text-foreground tracking-tighter">{stats.lastHour}</p>
                             </div>
 
-                            <div className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5] flex-1">
-                                <p className="text-sm font-semibold text-black mb-6">Top performing tags:</p>
+                            <div className="bg-card p-6 md:p-8 rounded-xl border border-border flex-1">
+                                <p className="text-sm font-semibold text-foreground mb-6">Top performing tags:</p>
                                 <div className="space-y-3">
                                     {links.slice(0, 3).map((link) => (
-                                        <div key={link.id} className="bg-white p-4 rounded-lg flex justify-between items-center shadow-sm border border-[#F1F3F5]/50">
-                                            <span className="text-sm font-medium text-black truncate max-w-[150px]">{link.title || link.short_slug}</span>
-                                            <span className="text-sm font-semibold text-black/60">{link.clicks}</span>
+                                        <div key={link.id} className="bg-background p-4 rounded-lg flex justify-between items-center shadow-sm border border-border/50">
+                                            <span className="text-sm font-medium text-foreground truncate max-w-[150px]">{link.title || link.short_slug}</span>
+                                            <span className="text-sm font-semibold text-muted-foreground">{link.clicks}</span>
                                         </div>
                                     ))}
                                     {links.length === 0 && (
@@ -70,7 +70,7 @@ export default async function DashboardPage({
                                             title="No links"
                                             description="Your top performing links will appear here once you start tracking."
                                             icon={Search}
-                                            className="py-8 bg-white"
+                                            className="py-8 bg-background"
                                         />
                                     )}
                                 </div>
@@ -82,7 +82,7 @@ export default async function DashboardPage({
                 {/* Real-time Links Management Section */}
                 <div className="px-4 space-y-4">
                     {/* Table Header Labels - Sentence Case & Premium Spacing */}
-                    <div className="grid grid-cols-12 gap-4 text-[11px] font-bold text-black/40 px-8 tracking-tight">
+                    <div className="grid grid-cols-12 gap-4 text-[11px] font-bold text-muted-foreground px-8 tracking-tight">
                         <div className="col-span-12 md:col-span-3">All tags</div>
                         <div className="hidden md:block col-span-1">Destination url</div>
                         <div className="hidden lg:block col-span-2">Last click</div>
@@ -103,15 +103,15 @@ export default async function DashboardPage({
                             { title: 'Operating system', data: demographics.os },
                             { title: 'Browser', data: demographics.browser }
                         ].map((section) => (
-                            <div key={section.title} className="bg-[#F8F9FA] p-6 md:p-8 rounded-xl border border-[#F1F3F5]">
-                                <p className="text-sm font-bold text-black mb-6 md:mb-10 px-2">{section.title}</p>
+                            <div key={section.title} className="bg-card p-6 md:p-8 rounded-xl border border-border">
+                                <p className="text-sm font-bold text-foreground mb-6 md:mb-10 px-2">{section.title}</p>
                                 <div className="space-y-2">
                                     {section.data.map((item) => (
-                                        <div key={item.name} className="bg-white p-3.5 rounded-lg flex items-center justify-between shadow-sm border border-[#F1F3F5]/50 group hover:border-black/5 transition-colors">
-                                            <span className="text-black font-medium text-[13px] truncate max-w-[100px]">{item.name}</span>
+                                        <div key={item.name} className="bg-background p-3.5 rounded-lg flex items-center justify-between shadow-sm border border-border/50 group hover:border-foreground/10 transition-colors">
+                                            <span className="text-foreground font-medium text-[13px] truncate max-w-[100px]">{item.name}</span>
                                             <div className="flex items-center gap-6">
-                                                <span className="text-gray-400 font-medium text-[12px]">{item.count}</span>
-                                                <div className="bg-black text-white px-3.5 py-1.5 rounded-full text-[11px] font-bold min-w-[3.2rem] text-center">
+                                                <span className="text-muted-foreground font-medium text-[12px]">{item.count}</span>
+                                                <div className="bg-foreground text-background px-3.5 py-1.5 rounded-full text-[11px] font-bold min-w-[3.2rem] text-center">
                                                     {item.pct}
                                                 </div>
                                             </div>
@@ -122,7 +122,7 @@ export default async function DashboardPage({
                                             title={`No ${section.title.toLowerCase()} data`}
                                             description="Start collecting clicks to see demographic insights."
                                             icon={PieChart}
-                                            className="py-10 bg-white"
+                                            className="py-10 bg-background"
                                         />
                                     )}
                                 </div>

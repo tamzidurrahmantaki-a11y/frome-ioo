@@ -1,18 +1,19 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 import { revalidatePath } from 'next/cache'
 
 export async function getSupportCards() {
     try {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('support_cards')
             .select('*')
             .order('order_index', { ascending: true })
 
+        // If table doesn't exist, this returns error, we should handle gracefully or ensure table exists
         if (error) throw error
 
         return { success: true, data }
@@ -30,7 +31,7 @@ export async function createSupportCard(cardData: {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         // Get the highest order_index
         const { data: cards } = await supabase
@@ -50,7 +51,7 @@ export async function createSupportCard(cardData: {
         if (error) throw error
 
         revalidatePath('/support')
-        revalidatePath('/admin/content')
+        revalidatePath('/admin/settings')
 
         return { success: true, data }
     } catch (error) {
@@ -59,16 +60,11 @@ export async function createSupportCard(cardData: {
     }
 }
 
-export async function updateSupportCard(id: string, cardData: {
-    title?: string
-    description?: string
-    icon_name?: string
-    is_active?: boolean
-}) {
+export async function updateSupportCard(id: string, cardData: any) {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('support_cards')
@@ -80,7 +76,7 @@ export async function updateSupportCard(id: string, cardData: {
         if (error) throw error
 
         revalidatePath('/support')
-        revalidatePath('/admin/content')
+        revalidatePath('/admin/settings')
 
         return { success: true, data }
     } catch (error) {
@@ -93,7 +89,7 @@ export async function deleteSupportCard(id: string) {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { error } = await supabase
             .from('support_cards')
@@ -103,7 +99,7 @@ export async function deleteSupportCard(id: string) {
         if (error) throw error
 
         revalidatePath('/support')
-        revalidatePath('/admin/content')
+        revalidatePath('/admin/settings')
 
         return { success: true }
     } catch (error) {
@@ -116,7 +112,7 @@ export async function reorderSupportCards(cardIds: string[]) {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         // Update order_index for each card
         const updates = cardIds.map((id, index) =>
@@ -129,7 +125,7 @@ export async function reorderSupportCards(cardIds: string[]) {
         await Promise.all(updates)
 
         revalidatePath('/support')
-        revalidatePath('/admin/content')
+        revalidatePath('/admin/settings')
 
         return { success: true }
     } catch (error) {

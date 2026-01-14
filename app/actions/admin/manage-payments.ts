@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 import { revalidatePath } from 'next/cache'
 
@@ -11,7 +11,7 @@ export async function getPayments(filters?: {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         let query = supabase
             .from('crypto_payments')
@@ -39,29 +39,41 @@ export async function getPayments(filters?: {
 
 export async function verifyPayment(paymentId: string) {
     try {
-        await requireAdmin()
+        const admin = await requireAdmin()
 
-        const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        const supabase = createAdminClient()
 
-        if (!user) throw new Error('Not authenticated')
-
-        const { data, error } = await supabase
+        // 1. Verify and get the payment details
+        const { data: payment, error: updateError } = await supabase
             .from('crypto_payments')
             .update({
                 status: 'verified',
                 verified_at: new Date().toISOString(),
-                verified_by: user.id
+                verified_by: admin.id
             })
             .eq('id', paymentId)
             .select()
             .single()
 
-        if (error) throw error
+        if (updateError) throw updateError
+
+        // 2. If payment has a user_id, upgrade them
+        if (payment && payment.user_id) {
+            const { error: userError } = await supabase
+                .from('users')
+                .update({ subscription_plan: 'Pro' }) // Default upgrade, or logic based on amount
+                .eq('id', payment.user_id)
+
+            if (userError) {
+                console.error('Failed to upgrade user after payment:', userError)
+                // We don't throw here to avoid rolling back the verification, but we log it
+            }
+        }
 
         revalidatePath('/admin/payments')
+        revalidatePath('/admin/users')
 
-        return { success: true, data }
+        return { success: true, data: payment }
     } catch (error) {
         console.error('Error verifying payment:', error)
         return { success: false, error: 'Failed to verify payment' }
@@ -72,7 +84,7 @@ export async function updateUserSubscription(userId: string, plan: string) {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('users')

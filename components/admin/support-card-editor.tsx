@@ -47,8 +47,8 @@ export function SupportCardEditor({ cards }: SupportCardEditorProps) {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">Help Center Cards</h2>
-                <Button onClick={() => { setSelectedCard(null); setIsOpen(true) }} className="bg-[#00C975] text-black hover:bg-[#00C975]/90">
+                <h2 className="text-xl font-black text-foreground tracking-tighter uppercase italic">Help Center Cards</h2>
+                <Button onClick={() => { setSelectedCard(null); setIsOpen(true) }} className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase text-[10px] tracking-widest h-10 px-6 rounded-xl">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Card
                 </Button>
@@ -58,21 +58,21 @@ export function SupportCardEditor({ cards }: SupportCardEditorProps) {
                 {cards.map((card) => {
                     const Icon = (Icons as any)[card.icon_name || "HelpCircle"] || Icons.HelpCircle
                     return (
-                        <div key={card.id} className="bg-white border border-gray-100 rounded-xl p-6 relative group hover:shadow-lg transition-all">
+                        <div key={card.id} className="bg-card border border-border/50 rounded-2xl p-8 relative group hover:border-primary/30 transition-all duration-300 shadow-xl shadow-black/20">
                             <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => { setSelectedCard(card); setIsOpen(true) }} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-black">
+                                <button onClick={() => { setSelectedCard(card); setIsOpen(true) }} className="p-2.5 hover:bg-muted rounded-xl text-muted-foreground/40 hover:text-foreground transition-all">
                                     <Pencil className="w-4 h-4" />
                                 </button>
-                                <button onClick={() => handleDelete(card.id)} className="p-2 hover:bg-red-50 rounded-lg text-gray-500 hover:text-red-500">
+                                <button onClick={() => handleDelete(card.id)} className="p-2.5 hover:bg-red-500/10 rounded-xl text-muted-foreground/40 hover:text-red-500 transition-all">
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
 
-                            <div className="w-12 h-12 rounded-xl bg-[#00C975]/10 flex items-center justify-center mb-4">
-                                <Icon className="w-6 h-6 text-[#00C975]" />
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 shadow-[0_0_20px_rgba(0,201,117,0.1)]">
+                                <Icon className="w-7 h-7 text-primary" />
                             </div>
-                            <h3 className="font-bold text-lg mb-2">{card.title}</h3>
-                            <p className="text-sm text-gray-500">{card.description}</p>
+                            <h3 className="font-black text-xl mb-3 text-foreground tracking-tighter italic uppercase">{card.title}</h3>
+                            <p className="text-sm font-medium text-muted-foreground/60 leading-relaxed min-h-[40px]">{card.description}</p>
                         </div>
                     )
                 })}
@@ -135,24 +135,24 @@ function CardDialog({ open, onOpenChange, card, onSuccess }: { open: boolean, on
                     <DialogTitle>{card ? "Edit Card" : "New Card"}</DialogTitle>
                     <DialogDescription>Details for the help center card</DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="space-y-2">
-                        <Label>Title</Label>
-                        <Input {...register("title")} required />
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Title</Label>
+                        <Input {...register("title")} required className="bg-background/50 border-border/50 h-11 rounded-xl" />
                     </div>
                     <div className="space-y-2">
-                        <Label>Description</Label>
-                        <Textarea {...register("description")} required />
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
+                        <Textarea {...register("description")} required className="bg-background/50 border-border/50 min-h-[100px] rounded-xl" />
                     </div>
                     <div className="space-y-2">
-                        <Label>Icon Name (Lucide React)</Label>
-                        <Input {...register("icon_name")} placeholder="e.g. Link, BarChart, Zap" />
-                        <p className="text-xs text-gray-500">Case-sensitive Lucide icon name</p>
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Icon Name (Lucide React)</Label>
+                        <Input {...register("icon_name")} placeholder="e.g. Link, BarChart, Zap" className="bg-background/50 border-border/50 h-11 rounded-xl" />
+                        <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Case-sensitive Lucide icon name</p>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={isLoading} className="bg-black text-white hover:bg-black/90">
+                        <Button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-black h-12 rounded-xl uppercase text-[11px] tracking-widest shadow-lg shadow-primary/10">
                             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            Save
+                            Save Card Changes
                         </Button>
                     </DialogFooter>
                 </form>

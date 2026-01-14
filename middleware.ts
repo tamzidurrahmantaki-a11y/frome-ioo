@@ -2,96 +2,81 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-    // 1. Setup Response
+    const path = request.nextUrl.pathname
+
+    // -------------------------------------------------------------------------
+    // 0. PREPARE HEADERS (Critical for Layout Detection)
+    // -------------------------------------------------------------------------
+    // We must pass the URL to the server components via headers
+    // so app/admin/layout.tsx knows when to skip sidebar/auth checks
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-url', path)
+
+    // -------------------------------------------------------------------------
+    // 1. ASSET & PUBLIC BYPASS
+    // -------------------------------------------------------------------------
+    const publicPaths = ['/', '/login', '/admin/login', '/auth/callback', '/update-password', '/forgot-password']
+    const isPublicPath = publicPaths.includes(path) || path.includes('.')
+
+    if (isPublicPath) {
+        return NextResponse.next({
+            request: { headers: requestHeaders }
+        })
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. PROTECTED ROUTE DETECTION
+    // -------------------------------------------------------------------------
+    const protectedPaths = ['/dashboard', '/analytics', '/profile', '/plans', '/support']
+    const isUserProtected = protectedPaths.some(p => path.startsWith(p))
+    const isAdminPath = path.startsWith('/admin')
+
+    // If it's not a protected path (e.g. it's a short link), allow access immediately
+    if (!isUserProtected && !isAdminPath) {
+        return NextResponse.next({
+            request: { headers: requestHeaders }
+        })
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. AUTHENTICATION (Only for protected routes)
+    // -------------------------------------------------------------------------
     let response = NextResponse.next({
         request: {
-            headers: request.headers,
+            headers: requestHeaders,
         },
     })
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-    // Exit if missing env (avoids crashes)
-    if (!supabaseUrl || !supabaseKey) return response
-
-    const supabase = createServerClient(
-        supabaseUrl,
-        supabaseKey,
-        {
-            cookies: {
-                getAll() { return request.cookies.getAll() },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-                    cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
-                },
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
+        cookies: {
+            getAll: () => request.cookies.getAll(),
+            setAll: (cookiesToSet) => {
+                cookiesToSet.forEach(({ name, value, options }) => {
+                    request.cookies.set(name, value)
+                    response.cookies.set(name, value, options)
+                })
             },
-        }
-    )
+        },
+    })
 
-    const path = request.nextUrl.pathname
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // --- DEBUGGING LOGS (Check your terminal) ---
-    // Exclude static assets from logs to keep terminal clean
-    const isStatic = path.startsWith('/_next') || path.startsWith('/static') || path.includes('.')
-    if (!isStatic) {
-        console.log(`[Middleware] Processing: ${path}`)
+    // A. User Protection
+    if (isUserProtected && !user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('next', path)
+        return NextResponse.redirect(url)
     }
 
-    // 2. EXPLICITLY ALLOW ADMIN LOGIN PAGE
-    // This MUST be the first check to prevent any loops.
-    if (path === '/admin/login') {
-        const { data: { user } } = await supabase.auth.getUser()
-
-        // If they are already an admin, be nice and send them to the dashboard
-        if (user) {
-            const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
-            if (profile?.role === 'admin') {
-                console.log(`[Middleware] Admin at login page -> Redirecting to Dashboard`)
-                return NextResponse.redirect(new URL('/admin', request.url))
-            }
-        }
-
-        // Otherwise, JUST LET THE PAGE LOAD
-        console.log(`[Middleware] Allowing /admin/login`)
-        return response
-    }
-
-    // 3. PROTECT ADMIN SUB-ROUTES
-    // Matches /admin, /admin/users, /admin/settings... but NOT /admin/login (caught above)
-    if (path.startsWith('/admin')) {
-        const { data: { user } } = await supabase.auth.getUser()
-
-        // Not logged in -> Go to login
-        if (!user) {
-            console.log(`[Middleware] Protected Admin Route -> Redirecting to Login`)
+    // B. Admin Protection
+    if (isAdminPath) {
+        const adminSession = request.cookies.get('admin_session')
+        if (!adminSession) {
             return NextResponse.redirect(new URL('/admin/login', request.url))
-        }
-
-        // Check Role
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-        // Not Admin -> Go Home
-        if (!profile || profile.role !== 'admin') {
-            console.log(`[Middleware] Non-Admin User (${user.email}) -> Access Denied`)
-            return NextResponse.redirect(new URL('/', request.url))
-        }
-
-        // Is Admin -> Allow
-        console.log(`[Middleware] Admin Access Granted to ${path}`)
-        return response
-    }
-
-    // 5. USER DASHBOARD PROTECTION
-    const protectedPaths = ['/dashboard', '/analytics', '/profile', '/plans', '/support']
-    if (protectedPaths.some(p => path.startsWith(p))) {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            return NextResponse.redirect(new URL('/login', request.url))
         }
     }
 
@@ -100,6 +85,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico).*)',
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|gif|svg|webp|css|js|woff2?|map)).*)',
     ],
 }

@@ -74,20 +74,20 @@ export function PaymentTable({ payments: initialPayments }: { payments: Payment[
     return (
         <div className="space-y-6">
             {/* Filters */}
-            <div className="bg-[#fcfcfc] border border-gray-100 rounded-xl p-6 flex flex-col md:flex-row gap-4">
+            <div className="bg-card border border-border/50 rounded-2xl p-8 flex flex-col md:flex-row gap-6 shadow-xl shadow-black/20">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         placeholder="Search email or transaction hash..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 bg-white border-gray-200"
+                        className="pl-12 bg-background border-border/50 h-12 rounded-xl focus-visible:ring-primary/20"
                     />
                 </div>
                 <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00C975]"
+                    className="px-6 py-2 bg-background border border-border/50 rounded-xl text-sm font-bold uppercase tracking-widest text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/30"
                 >
                     <option value="all">All Status</option>
                     <option value="pending">Pending</option>
@@ -97,19 +97,19 @@ export function PaymentTable({ payments: initialPayments }: { payments: Payment[
             </div>
 
             {/* Table */}
-            <div className="bg-[#fcfcfc] border border-gray-100 rounded-xl overflow-hidden">
+            <div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <thead className="bg-background/80 backdrop-blur-md border-b border-border/50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Items</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Transaction</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">User</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Items</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Transaction</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Status</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-border/30">
                             {filteredPayments.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
@@ -118,32 +118,32 @@ export function PaymentTable({ payments: initialPayments }: { payments: Payment[
                                 </tr>
                             ) : (
                                 filteredPayments.map((payment) => (
-                                    <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <p className="font-medium text-sm text-black">{payment.user_email}</p>
-                                            <p className="text-xs text-gray-500">{new Date(payment.created_at).toLocaleDateString()}</p>
+                                    <tr key={payment.id} className="hover:bg-muted/30 transition-colors">
+                                        <td className="px-8 py-6">
+                                            <p className="font-bold text-sm text-foreground tracking-tight">{payment.user_email}</p>
+                                            <p className="text-[11px] font-medium text-muted-foreground/50">{new Date(payment.created_at).toLocaleDateString()}</p>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-8 py-6">
                                             <div className="flex items-center gap-2">
-                                                <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs font-bold rounded">
+                                                <span className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded tracking-widest">
                                                     {payment.plan_type}
                                                 </span>
-                                                <span className="text-sm font-medium">
+                                                <span className="text-sm font-bold text-foreground">
                                                     ${payment.amount || 0}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-8 py-6">
                                             <div className="flex items-center gap-2 max-w-[150px]">
-                                                <code className="text-xs bg-gray-100 px-2 py-1 rounded truncate block w-full" title={payment.transaction_hash}>
+                                                <code className="text-[11px] font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded truncate block w-full border border-border/30" title={payment.transaction_hash}>
                                                     {payment.transaction_hash}
                                                 </code>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-8 py-6">
                                             <StatusBadge status={payment.status} />
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-8 py-6">
                                             {payment.status === 'pending' && (
                                                 <Button
                                                     size="sm"
@@ -191,7 +191,7 @@ export function PaymentTable({ payments: initialPayments }: { payments: Payment[
 function StatusBadge({ status }: { status: string }) {
     if (status === 'verified') {
         return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20">
                 <CheckCircle className="w-3.5 h-3.5" />
                 Verified
             </span>
@@ -199,14 +199,14 @@ function StatusBadge({ status }: { status: string }) {
     }
     if (status === 'failed') {
         return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-500/10 text-red-500 border border-red-500/20">
                 <XCircle className="w-3.5 h-3.5" />
                 Failed
             </span>
         )
     }
     return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 border border-amber-500/20">
             <AlertCircle className="w-3.5 h-3.5" />
             Pending
         </span>

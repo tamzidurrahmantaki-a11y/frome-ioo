@@ -1,13 +1,13 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 
 export async function getAdminStats() {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         // Get total users
         const { count: totalUsers } = await supabase

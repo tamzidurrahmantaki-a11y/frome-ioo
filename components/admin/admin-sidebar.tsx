@@ -17,6 +17,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { ModeToggle } from "@/components/mode-toggle"
 
 const adminItems = [
     {
@@ -54,7 +55,6 @@ interface AdminSidebarProps {
 function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
     const pathname = usePathname()
     const [mounted, setMounted] = React.useState(false)
-    const supabase = createClient()
     const router = useRouter()
     const [isMobileOpen, setIsMobileOpen] = React.useState(false)
 
@@ -63,14 +63,13 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
     }, [])
 
     const handleLogout = async () => {
-        await supabase.auth.signOut()
-        router.refresh()
-        router.push('/')
+        const { adminLogout } = await import('@/app/admin/login/actions')
+        await adminLogout()
     }
 
     if (!mounted) {
         return (
-            <div className="flex min-h-screen w-full bg-white md:p-6 gap-8">
+            <div className="flex min-h-screen w-full bg-background md:p-6 gap-8">
                 <main className="flex-1 flex flex-col min-w-0 p-4 md:p-0">
                     <div className="flex-1">
                         {children}
@@ -81,7 +80,7 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
     }
 
     const SidebarContent = () => (
-        <aside className="w-20 bg-black rounded-xl flex flex-col items-center py-10 shrink-0 shadow-2xl shadow-black/20 h-[calc(100vh-3rem)] sticky top-6">
+        <aside className="w-20 bg-[#1A1A1A] border-r border-white/5 rounded-xl flex flex-col items-center py-10 shrink-0 shadow-2xl shadow-black/20 h-[calc(100vh-3rem)] sticky top-6">
             {/* Logo */}
             <div className="text-white font-semibold text-3xl mb-14 tracking-tighter select-none cursor-pointer" onClick={() => router.push('/admin')}>A.</div>
 
@@ -138,7 +137,7 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
     )
 
     return (
-        <div className="flex min-h-screen w-full bg-[#ffffff] md:p-6 gap-8">
+        <div className="flex min-h-screen w-full bg-background md:p-6 gap-8">
             {/* Desktop Sidebar (Sticky) */}
             <div className="hidden lg:block relative">
                 <SidebarContent />
@@ -152,7 +151,7 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
                         {/* Mobile Toggle */}
                         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
                             <SheetTrigger asChild>
-                                <button className="lg:hidden p-2 text-black hover:bg-gray-100 rounded-xl transition-colors">
+                                <button className="lg:hidden p-2 text-foreground hover:bg-muted rounded-xl transition-colors">
                                     <Menu className="w-6 h-6" />
                                 </button>
                             </SheetTrigger>
@@ -161,30 +160,31 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
                             </SheetContent>
                         </Sheet>
                         <div>
-                            <h1 className="text-xl md:text-2xl font-semibold text-black tracking-tight leading-none">
+                            <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight leading-none">
                                 Admin Portal
                             </h1>
-                            <p className="text-sm text-gray-500 mt-1">Manage your platform</p>
+                            <p className="text-sm text-muted-foreground mt-1">Manage your platform</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-6">
+                        <ModeToggle />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Avatar className="w-10 h-10 md:w-12 md:h-12 cursor-pointer border-2 border-transparent hover:border-black transition-all shadow-sm">
+                                <Avatar className="w-10 h-10 md:w-12 md:h-12 cursor-pointer border border-border hover:border-foreground/20 transition-all shadow-sm">
                                     <AvatarImage src={user?.user_metadata?.avatar_url} />
-                                    <AvatarFallback className="bg-gray-100 text-black font-semibold text-lg">
+                                    <AvatarFallback className="bg-muted text-foreground font-semibold text-lg">
                                         {(user?.email?.[0] || 'A').toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 shadow-2xl border-gray-100">
-                                <DropdownMenuLabel className="px-4 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Admin Account</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => router.push('/dashboard')} className="rounded-xl h-12 px-4 font-medium text-sm cursor-pointer hover:bg-gray-50">
+                            <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 shadow-2xl border-border bg-card">
+                                <DropdownMenuLabel className="px-4 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Admin Account</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => router.push('/dashboard')} className="rounded-xl h-12 px-4 font-medium text-sm cursor-pointer hover:bg-muted">
                                     User Dashboard
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="my-2 bg-gray-50" />
-                                <DropdownMenuItem onClick={handleLogout} className="rounded-xl h-12 px-4 font-medium text-sm text-red-500 cursor-pointer hover:bg-red-50">
+                                <DropdownMenuSeparator className="my-2 bg-border" />
+                                <DropdownMenuItem onClick={handleLogout} className="rounded-xl h-12 px-4 font-medium text-sm text-red-500 cursor-pointer hover:bg-red-500/10">
                                     Logout
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

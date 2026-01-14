@@ -1,29 +1,38 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
+import { headers } from 'next/headers'
 
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const supabase = await createClient()
+    // Check if we are on the login page
+    const headersList = await headers()
+    const pathname = headersList.get('x-url') || ''
 
-    const { data: { user } } = await supabase.auth.getUser()
+    if (pathname === '/admin/login') {
+        return <>{children}</>
+    }
 
-    if (!user) {
+    const cookieStore = await headers()
+    const adminSessionCookie = cookieStore.get('cookie') // headers() returns a Headers object? No, headers() is standard headers. Helper needed?
+    // Actually simpler to use cookies()
+    const { cookies } = await import('next/headers')
+    const cookieJar = await cookies()
+    const sessionCookie = cookieJar.get('admin_session')
+
+    if (!sessionCookie) {
+        // Middleware should have caught this, but just in case
         redirect('/admin/login')
     }
 
-    // Check if user has admin role
-    const { data: profile } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-
-    if (!profile || profile.role !== 'admin') {
-        redirect('/')
+    let user = { email: 'Admin' }
+    try {
+        user = JSON.parse(sessionCookie.value)
+    } catch (e) {
+        // invalid cookie
     }
 
     return (

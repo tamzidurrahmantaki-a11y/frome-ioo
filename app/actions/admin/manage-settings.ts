@@ -1,18 +1,22 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 import { revalidatePath } from 'next/cache'
 
 export async function getSettings() {
     try {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
-            .from('support_settings')
+            .from('site_settings')
             .select('*')
+            .order('key', { ascending: true })
 
-        if (error) throw error
+        if (error) {
+            // Fallback if table doesn't exist yet (during transition)
+            return { success: true, data: [] }
+        }
 
         return { success: true, data }
     } catch (error) {
@@ -21,37 +25,22 @@ export async function getSettings() {
     }
 }
 
-export async function updateSetting(settingKey: string, settingValue: string) {
+export async function updateSetting(key: string, value: string) {
     try {
         await requireAdmin()
-
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
-            .from('support_settings')
-            .update({ setting_value: settingValue })
-            .eq('setting_key', settingKey)
+            .from('site_settings')
+            .update({ value, updated_at: new Date().toISOString() })
+            .eq('key', key)
             .select()
             .single()
 
-        if (error) {
-            // If setting doesn't exist, create it
-            const { data: newData, error: insertError } = await supabase
-                .from('support_settings')
-                .insert([{ setting_key: settingKey, setting_value: settingValue }])
-                .select()
-                .single()
+        if (error) throw error
 
-            if (insertError) throw insertError
-
-            revalidatePath('/support')
-            revalidatePath('/admin/content')
-
-            return { success: true, data: newData }
-        }
-
-        revalidatePath('/support')
-        revalidatePath('/admin/content')
+        revalidatePath('/', 'layout') // Revalidate everything for theme changes
+        revalidatePath('/admin/settings')
 
         return { success: true, data }
     } catch (error) {

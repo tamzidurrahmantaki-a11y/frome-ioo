@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 
 export async function getUsers(filters?: {
@@ -10,7 +10,7 @@ export async function getUsers(filters?: {
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         let query = supabase
             .from('users')

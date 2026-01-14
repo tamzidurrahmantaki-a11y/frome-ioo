@@ -78,17 +78,17 @@ export default function ProfilePage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
-                    <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-black">General details</h2>
-                    <p className="text-[13px] md:text-sm font-medium text-gray-400">Update your photo and personal details here</p>
+                    <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">General details</h2>
+                    <p className="text-[13px] md:text-sm font-medium text-muted-foreground">Update your photo and personal details here</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" className="text-sm font-semibold text-black hover:bg-gray-100 h-11 px-8 rounded-xl transition-all">
+                    <Button variant="ghost" className="text-sm font-semibold text-foreground hover:bg-muted h-11 px-8 rounded-xl transition-all">
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="h-11 px-10 bg-black hover:bg-black/90 text-white font-semibold rounded-xl shadow-xl shadow-black/5 transition-all disabled:opacity-50"
+                        className="h-11 px-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-xl shadow-primary/10 transition-all disabled:opacity-50"
                     >
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
                     </Button>
@@ -96,60 +96,60 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Card */}
-            <div className="space-y-16 bg-white p-12 rounded-xl border border-gray-100/50 shadow-sm">
+            <div className="space-y-16 bg-card p-12 rounded-xl border border-border pb-20">
                 {/* Avatar Section */}
                 <div className="flex items-center gap-10">
                     <div className="relative group">
-                        <Avatar className="w-32 h-32 border-4 border-white shadow-xl bg-black">
+                        <Avatar className="w-32 h-32 border-4 border-background shadow-xl bg-background">
                             <AvatarImage src={user?.user_metadata?.avatar_url} />
-                            <AvatarFallback className="bg-black text-white text-4xl font-semibold">
+                            <AvatarFallback className="bg-background text-foreground text-4xl font-semibold border border-border">
                                 {fullName?.[0]?.toUpperCase() || email?.[0]?.toUpperCase() || 'U'}
                             </AvatarFallback>
                         </Avatar>
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-sm md:text-base font-semibold text-black">{toSentenceCase(fullName) || "User"}</h3>
-                        <p className="text-[13px] font-medium text-gray-400 leading-loose">{email}</p>
+                        <h3 className="text-sm md:text-base font-semibold text-foreground">{toSentenceCase(fullName) || "User"}</h3>
+                        <p className="text-[13px] font-medium text-muted-foreground leading-loose">{email}</p>
                     </div>
                 </div>
 
                 {/* Form Fields */}
                 <div className="space-y-12 max-w-2xl">
                     <div className="space-y-4">
-                        <Label className="text-[13px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Full Name</Label>
+                        <Label className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest ml-1">Full Name</Label>
                         <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <User className="w-5 h-5" />
                             </div>
                             <Input
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 placeholder="Your full name"
-                                className="bg-gray-50/50 border-none h-14 pl-12 text-base font-medium text-black focus-visible:ring-1 focus-visible:ring-black/10 rounded-xl transition-all"
+                                className="bg-background border-border h-14 pl-12 text-base font-medium text-foreground focus-visible:ring-1 focus-visible:ring-primary/20 rounded-xl transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <Label className="text-[13px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Email Address</Label>
+                        <Label className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest ml-1">Email Address</Label>
                         <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <Mail className="w-5 h-5" />
                             </div>
                             <Input
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="name@example.com"
-                                className="bg-gray-50/50 border-none h-14 pl-12 text-base font-medium text-black focus-visible:ring-1 focus-visible:ring-black/10 rounded-xl transition-all"
+                                className="bg-background border-border h-14 pl-12 text-base font-medium text-foreground focus-visible:ring-1 focus-visible:ring-primary/20 rounded-xl transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="pt-6 space-y-12 border-t border-gray-100">
+                    <div className="pt-6 space-y-12 border-t border-border">
                         <div className="space-y-4">
-                            <Label className="text-[13px] font-semibold text-gray-400 uppercase tracking-widest ml-1">New Password</Label>
+                            <Label className="text-[13px] font-semibold text-muted-foreground uppercase tracking-widest ml-1">New Password</Label>
                             <div className="relative">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                     <Lock className="w-5 h-5" />
                                 </div>
                                 <Input
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter new password (optional)"
-                                    className="bg-gray-50/50 border-none h-14 pl-12 text-base font-medium text-black focus-visible:ring-1 focus-visible:ring-black/10 rounded-xl transition-all"
+                                    className="bg-background border-border h-14 pl-12 text-base font-medium text-foreground focus-visible:ring-1 focus-visible:ring-primary/20 rounded-xl transition-all"
                                 />
                             </div>
                         </div>

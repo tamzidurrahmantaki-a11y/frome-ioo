@@ -1,53 +1,50 @@
-import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 
 /**
- * Check if a user has admin role
+ * Check if the request has a valid admin session cookie
  */
-export async function isAdmin(userId?: string): Promise<boolean> {
-    const supabase = await createClient()
+export async function isAdmin(): Promise<boolean> {
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get('admin_session')
 
-    const uid = userId || (await supabase.auth.getUser()).data.user?.id
+    if (!sessionCookie) return false
 
-    if (!uid) return false
-
-    const { data, error } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', uid)
-        .single()
-
-    if (error || !data) return false
-
-    return data.role === 'admin'
+    try {
+        const session = JSON.parse(sessionCookie.value)
+        // Basic validation: check if it has an id and role
+        return Boolean(session?.id && session?.role)
+    } catch {
+        return false
+    }
 }
 
 /**
- * Get current admin user or null
+ * Get current admin user from cookie
  */
 export async function getAdminUser() {
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get('admin_session')
 
-    const { data: { user } } = await supabase.auth.getUser()
+    if (!sessionCookie) return null
 
-    if (!user) return null
-
-    const isAdminUser = await isAdmin(user.id)
-
-    if (!isAdminUser) return null
-
-    return user
+    try {
+        return JSON.parse(sessionCookie.value)
+    } catch {
+        return null
+    }
 }
 
 /**
  * Server-side guard that redirects if not admin
- * Use this in admin page components
+ * Use this in admin page components and server actions
  */
 export async function requireAdmin() {
     const adminUser = await getAdminUser()
 
     if (!adminUser) {
-        redirect('/')
+        redirect('/admin/login')
     }
 
     return adminUser

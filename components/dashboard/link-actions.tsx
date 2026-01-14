@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Edit2, Trash2, X, Loader2, Sparkles, Link2, AlertTriangle } from "lucide-react"
+import { Edit2, Trash2, X, Loader2, Sparkles, Link2, AlertTriangle, Copy, Check } from "lucide-react"
 import { deleteLink, updateLink } from "@/app/actions/link-actions"
 import { toast } from "sonner"
 
@@ -20,6 +20,7 @@ export function LinkActions({ link }: LinkActionsProps) {
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [copied, setCopied] = useState(false)
 
     const [title, setTitle] = useState(link.title)
     const [url, setUrl] = useState(link.original_url)
@@ -58,19 +59,42 @@ export function LinkActions({ link }: LinkActionsProps) {
         }
     }
 
-    return (
-        <div className="flex items-center gap-4">
-            <button
-                onClick={() => setIsDeleteOpen(true)}
-                className="text-gray-400 hover:text-red-500 transition-colors"
-                title="Delete Link"
-            >
-                <Trash2 className="w-5 h-5" />
-            </button>
+    const handleCopy = () => {
+        const fullUrl = `${window.location.origin}/${link.short_slug}`
+        navigator.clipboard.writeText(fullUrl)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
 
+    return (
+        <div className="flex items-center gap-6 w-full lg:w-auto">
+            {/* Action Group: Copy + Delete */}
+            <div className="flex items-center gap-3 shrink-0">
+                <button
+                    onClick={handleCopy}
+                    className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-xl text-muted-foreground/60 hover:text-foreground transition-all flex items-center justify-center shrink-0 border border-white/5"
+                    title="Copy Link"
+                >
+                    {copied ? (
+                        <Check className="w-4 h-4 text-[#00C975] animate-in zoom-in duration-200" />
+                    ) : (
+                        <Copy className="w-4 h-4" />
+                    )}
+                </button>
+
+                <button
+                    onClick={() => setIsDeleteOpen(true)}
+                    className="p-2.5 bg-muted/20 hover:bg-red-500/10 rounded-xl text-muted-foreground/60 hover:text-red-500 transition-all flex items-center justify-center shrink-0 border border-white/5"
+                    title="Delete Link"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
+            </div>
+
+            {/* Edit Button: Spaced by gap-6 from the group */}
             <Button
                 onClick={() => setIsEditOpen(true)}
-                className="bg-black hover:bg-black/80 text-white text-[10px] font-semibold uppercase tracking-widest px-6 h-9 rounded-xl"
+                className="bg-foreground text-background hover:bg-foreground/90 text-[10px] font-black uppercase tracking-[0.2em] px-5 md:px-7 h-10 rounded-xl shrink-0"
             >
                 Edit
             </Button>
@@ -78,8 +102,8 @@ export function LinkActions({ link }: LinkActionsProps) {
             {/* Edit Modal */}
             {isEditOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsEditOpen(false)} />
-                    <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsEditOpen(false)} />
+                    <div className="relative w-full max-w-md bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                         <div className="bg-black p-6 flex justify-between items-center text-white">
                             <div className="flex items-center gap-2">
                                 <Sparkles className="w-5 h-5 text-[#00C975]" />
@@ -137,8 +161,8 @@ export function LinkActions({ link }: LinkActionsProps) {
             {/* Delete Confirmation */}
             {isDeleteOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDeleteOpen(false)} />
-                    <div className="relative w-full max-w-sm bg-white rounded-xl shadow-2xl p-10 text-center animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsDeleteOpen(false)} />
+                    <div className="relative w-full max-w-sm bg-card border border-border/50 rounded-3xl shadow-2xl p-10 text-center animate-in fade-in zoom-in-95 duration-300">
                         <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="w-8 h-8" />
                         </div>

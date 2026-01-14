@@ -76,14 +76,102 @@
   --radius: 0.5rem;
 }
 
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0D0D0D;
+  --card-foreground: #ffffff;
+  --popover: #0D0D0D;
+  --popover-foreground: #ffffff;
+  --primary: #00C975;
+  --primary-foreground: #000000;
+  --secondary: #0D0D0D;
+  --secondary-foreground: #ffffff;
+  --muted: #0D0D0D;
+  --muted-foreground: #94A3B8;
+  --accent: #0D0D0D;
+  --accent-foreground: #ffffff;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.05);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #00C975;
+  --chart-1: #00C975;
+  --sidebar: #1A1A1A;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+}
+
+/* Premium Animations */
+/* Data Flow CSS Animation Placeholder - Moving to Component for better control */
+
+.mesh-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background-color: #050505;
+}
+
+.mesh-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.15;
+  pointer-events: none;
+  filter: contrast(150%) brightness(100%);
+}
+
+.mesh-gradient {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  top: -20%;
+  left: -20%;
+  background-image:
+    radial-gradient(at 10% 10%, hsla(155, 100%, 39%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, hsla(155, 100%, 39%, 0.03) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, hsla(155, 100%, 39%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, hsla(155, 100%, 39%, 0.03) 0px, transparent 50%);
+  filter: blur(120px);
+  animation: mesh 60s ease-in-out infinite alternate;
+  opacity: 1;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-nav {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Typography Enhancements */
+.hero-heading {
+  @apply font-semibold tracking-[0.03em] leading-[1.15];
+}
+
+.luxury-text {
+  @apply tracking-[0.25em] uppercase text-[10px] font-medium opacity-50;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

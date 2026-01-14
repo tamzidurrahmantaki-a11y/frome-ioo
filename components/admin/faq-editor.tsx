@@ -52,26 +52,26 @@ export function FaqEditor({ faqs }: { faqs: FAQ[] }) {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">Frequently Asked Questions</h2>
-                <Button onClick={() => setShowAddForm(!showAddForm)} className="bg-[#00C975] text-black hover:bg-[#00C975]/90">
+                <h2 className="text-xl font-black text-foreground tracking-tighter uppercase italic">Frequently Asked Questions</h2>
+                <Button onClick={() => setShowAddForm(!showAddForm)} className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase text-[10px] tracking-widest h-10 px-6 rounded-xl">
                     <Plus className="w-4 h-4 mr-2" />
                     New FAQ
                 </Button>
             </div>
 
             {showAddForm && (
-                <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-4">
-                    <div className="space-y-2">
-                        <Label>Question</Label>
-                        <Input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} />
+                <div className="bg-muted/30 p-8 rounded-2xl border border-border/50 space-y-6 animate-in fade-in slide-in-from-top-4 shadow-xl">
+                    <div className="space-y-3">
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Question</Label>
+                        <Input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} className="bg-background/50 border-border/50 h-11 rounded-xl" />
                     </div>
-                    <div className="space-y-2">
-                        <Label>Answer</Label>
-                        <Textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} />
+                    <div className="space-y-3">
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Answer</Label>
+                        <Textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} className="bg-background/50 border-border/50 min-h-[100px] rounded-xl" />
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <Button variant="ghost" onClick={() => setShowAddForm(false)}>Cancel</Button>
-                        <Button onClick={handleCreate} disabled={isLoading} className="bg-black text-white">
+                    <div className="flex justify-end gap-3">
+                        <Button variant="ghost" onClick={() => setShowAddForm(false)} className="rounded-xl font-bold text-xs uppercase tracking-widest">Cancel</Button>
+                        <Button onClick={handleCreate} disabled={isLoading} className="bg-primary text-primary-foreground hover:bg-primary/90 font-black h-11 px-6 rounded-xl uppercase text-[10px] tracking-widest">
                             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Create FAQ
                         </Button>
@@ -110,20 +110,20 @@ function FaqItem({ faq, isEditing, onEdit, onCancel, onDelete, onToggle }: any) 
 
     if (isEditing) {
         return (
-            <div className="bg-white p-6 rounded-xl border border-gray-200 space-y-4 shadow-lg ring-1 ring-black/5">
-                <div className="space-y-2">
-                    <Label>Question</Label>
-                    <Input value={data.question} onChange={e => setData({ ...data, question: e.target.value })} />
+            <div className="bg-card p-10 rounded-2xl border border-border/50 space-y-8 shadow-2xl ring-1 ring-white/5">
+                <div className="space-y-3">
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Question</Label>
+                    <Input value={data.question} onChange={e => setData({ ...data, question: e.target.value })} className="bg-background/50 border-border/50 h-12 rounded-xl" />
                 </div>
-                <div className="space-y-2">
-                    <Label>Answer</Label>
-                    <Textarea value={data.answer} onChange={e => setData({ ...data, answer: e.target.value })} className="min-h-[100px]" />
+                <div className="space-y-3">
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Answer</Label>
+                    <Textarea value={data.answer} onChange={e => setData({ ...data, answer: e.target.value })} className="min-h-[120px] bg-background/50 border-border/50 rounded-xl" />
                 </div>
-                <div className="flex justify-end gap-2">
-                    <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-                    <Button onClick={handleSave} disabled={saving} className="bg-black text-white">
+                <div className="flex justify-end gap-3">
+                    <Button variant="ghost" onClick={onCancel} className="rounded-xl font-bold text-xs uppercase tracking-widest">Cancel</Button>
+                    <Button onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90 font-black h-12 px-8 rounded-xl uppercase text-[10px] tracking-widest shadow-lg shadow-primary/10">
                         {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                        Save Changes
+                        Save FAQ Changes
                     </Button>
                 </div>
             </div>
@@ -132,26 +132,26 @@ function FaqItem({ faq, isEditing, onEdit, onCancel, onDelete, onToggle }: any) 
 
     return (
         <div className={cn(
-            "bg-white border border-gray-100 rounded-xl p-4 flex items-start gap-4 transition-all hover:border-gray-200",
-            !faq.is_active && "opacity-60 bg-gray-50"
+            "bg-card border border-border/50 rounded-2xl p-6 flex items-start gap-6 transition-all duration-300 hover:border-primary/30",
+            !faq.is_active && "opacity-40 grayscale"
         )}>
-            <div className="mt-1 cursor-grab text-gray-400 hover:text-gray-600">
+            <div className="mt-1 cursor-grab text-muted-foreground/30 hover:text-primary transition-colors">
                 <GripVertical className="w-5 h-5" />
             </div>
 
-            <div className="flex-1 space-y-1">
-                <h3 className="font-semibold text-sm text-black">{faq.question}</h3>
-                <p className="text-xs text-gray-500 line-clamp-2">{faq.answer}</p>
+            <div className="flex-1 space-y-2">
+                <h3 className="font-bold text-base text-foreground tracking-tight leading-tight">{faq.question}</h3>
+                <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed">{faq.answer}</p>
             </div>
 
-            <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                    <Label htmlFor={`active-${faq.id}`} className="text-xs text-gray-500">Active</Label>
+            <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                    <Label htmlFor={`active-${faq.id}`} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Visible</Label>
                     <Switch id={`active-${faq.id}`} checked={faq.is_active} onCheckedChange={onToggle} />
                 </div>
-                <div className="h-4 w-px bg-gray-200 mx-1" />
-                <Button variant="ghost" size="sm" onClick={onEdit}>Edit</Button>
-                <Button variant="ghost" size="sm" onClick={onDelete} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                <div className="h-6 w-px bg-border/30 mx-1" />
+                <Button variant="ghost" size="sm" onClick={onEdit} className="rounded-xl font-bold text-[10px] tracking-widest uppercase hover:bg-muted">Edit</Button>
+                <Button variant="ghost" size="icon" onClick={onDelete} className="rounded-xl text-muted-foreground hover:text-red-500 hover:bg-red-500/10">
                     <Trash2 className="w-4 h-4" />
                 </Button>
             </div>

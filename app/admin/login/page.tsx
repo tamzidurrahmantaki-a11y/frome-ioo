@@ -1,111 +1,89 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { Loader2, ShieldCheck } from "lucide-react"
-import Link from "next/link"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { adminLogin } from './actions'
+import { toast } from 'sonner' // Assuming sonner is installed as per package.json
 
 export default function AdminLoginPage() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const router = useRouter()
-    const supabase = createClient()
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
+        setError(null)
 
-        try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            })
+        const formData = new FormData(e.currentTarget)
+        const result = await adminLogin(formData)
 
-            if (error) throw error
-
-            // Check if user is admin
-            if (data.user) {
-                const { data: profile } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single()
-
-                if (profile?.role !== 'admin') {
-                    await supabase.auth.signOut()
-                    toast.error("Access denied. Admin privileges required.")
-                    setLoading(false)
-                    return
-                }
-
-                toast.success("Welcome back, Admin")
-                router.push('/admin')
-                router.refresh()
-            }
-        } catch (error: any) {
-            toast.error(error.message || "Failed to login")
+        if (result?.error) {
+            setError(result.error)
+            toast.error(result.error)
+            setLoading(false)
+        } else if (result?.success) {
+            toast.success('Welcome back, Owner.')
+            router.push('/admin')
+            router.refresh()
+        } else {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black p-4">
-            <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-2xl">
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-[#00C975]/20">
-                        <ShieldCheck className="w-8 h-8 text-[#00C975]" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-black">Admin Portal</h1>
-                    <p className="text-gray-500 mt-2 text-sm">Secure access for platform management</p>
+        <div className="flex min-h-screen items-center justify-center bg-background px-4 selection:bg-primary selection:text-primary-foreground">
+            <div className="w-full max-w-md space-y-10 rounded-3xl border border-border/50 bg-card p-12 shadow-2xl shadow-black/40 animate-in fade-in zoom-in duration-700">
+                <div className="text-center space-y-2">
+                    <h1 className="text-3xl font-black tracking-tighter italic uppercase text-foreground">Admin Portal</h1>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-50">
+                        Secure Authentication System
+                    </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
-                    <div className="space-y-2">
-                        <Label>Email Address</Label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-3">
+                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Email</Label>
                         <Input
+                            id="email"
+                            name="email"
                             type="email"
-                            placeholder="admin@frome.io"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Owner Email"
                             required
-                            className="h-12 border-gray-200 focus:border-black focus:ring-black"
+                            className="bg-background/50 border-border/40 text-foreground placeholder:text-muted-foreground/20 h-12 rounded-xl focus-visible:ring-primary/20"
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label>Password</Label>
-                        </div>
+                    <div className="space-y-3">
+                        <Label htmlFor="password" title="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Password</Label>
                         <Input
+                            id="password"
+                            name="password"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="h-12 border-gray-200 focus:border-black focus:ring-black"
+                            placeholder="••••••••"
+                            className="bg-background/50 border-border/40 text-foreground placeholder:text-muted-foreground/20 h-12 rounded-xl focus-visible:ring-primary/20"
                         />
                     </div>
+
+                    {error && (
+                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-950/50">
+                            {error}
+                        </div>
+                    )}
 
                     <Button
                         type="submit"
+                        className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase text-[11px] tracking-[0.2em] rounded-xl shadow-lg shadow-primary/10 transition-all active:scale-[0.98]"
                         disabled={loading}
-                        className="w-full h-12 bg-black text-white hover:bg-black/90 font-semibold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        {loading && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
-                        Access Dashboard
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Access Dashboard"}
                     </Button>
                 </form>
-
-                <div className="mt-8 text-center pt-6 border-t border-gray-100">
-                    <Link href="/" className="text-sm font-medium text-gray-500 hover:text-black transition-colors">
-                        ← Return to Homepage
-                    </Link>
-                </div>
             </div>
         </div>
     )

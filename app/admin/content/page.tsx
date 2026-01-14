@@ -26,25 +26,25 @@ export default async function ContentPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-black mb-2">Content Management</h1>
-                <p className="text-gray-500">Manage support page content and settings</p>
+                <h1 className="text-3xl font-black tracking-tighter text-foreground mb-2 italic uppercase">Content Management</h1>
+                <p className="text-muted-foreground font-medium">Manage support page content and platform features.</p>
             </div>
 
             <Tabs defaultValue="help-center" className="w-full">
-                <TabsList className="bg-white border border-gray-100 p-1 rounded-xl w-full md:w-auto grid grid-cols-2 md:inline-flex">
-                    <TabsTrigger value="help-center" className="rounded-lg data-[state=active]:bg-black data-[state=active]:text-white">
+                <TabsList className="bg-muted/50 border border-border/50 p-1.5 rounded-2xl w-full md:w-auto grid grid-cols-2 md:inline-flex h-auto gap-1">
+                    <TabsTrigger value="help-center" className="rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all">
                         <FileText className="w-4 h-4 mr-2" />
                         Help Center
                     </TabsTrigger>
-                    <TabsTrigger value="faqs" className="rounded-lg data-[state=active]:bg-black data-[state=active]:text-white">
+                    <TabsTrigger value="faqs" className="rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all">
                         <HelpCircle className="w-4 h-4 mr-2" />
                         FAQs
                     </TabsTrigger>
-                    <TabsTrigger value="contacts" className="rounded-lg data-[state=active]:bg-black data-[state=active]:text-white">
+                    <TabsTrigger value="contacts" className="rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all">
                         <MessageSquare className="w-4 h-4 mr-2" />
                         Contacts
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="rounded-lg data-[state=active]:bg-black data-[state=active]:text-white">
+                    <TabsTrigger value="settings" className="rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 transition-all">
                         <Settings className="w-4 h-4 mr-2" />
                         Settings
                     </TabsTrigger>
@@ -64,7 +64,7 @@ export default async function ContentPage() {
                     </TabsContent>
 
                     <TabsContent value="settings" className="space-y-6 focus-visible:outline-none">
-                        <SettingsEditor settings={settings} />
+                        <SettingsEditor section="general" settings={settings} />
                     </TabsContent>
                 </div>
             </Tabs>

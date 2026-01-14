@@ -10,66 +10,32 @@ interface SmartLinkProps {
     className?: string
 }
 
-export function SmartLink({ slug, className }: SmartLinkProps) {
-    const [copied, setCopied] = useState(false)
-    const getFullUrl = () => {
-        if (typeof window === 'undefined') return ''
-        const host = window.location.host.replace('www.', '')
-        const protocol = window.location.protocol
-        return `${protocol}//${host}/${slug}`
-    }
+export function LinkDisplay({ slug, className }: SmartLinkProps) {
+    const [mounted, setMounted] = useState(false)
 
-    const handleCopy = async (e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-
-        try {
-            await navigator.clipboard.writeText(getFullUrl())
-            setCopied(true)
-            toast.success("Link copied!")
-            setTimeout(() => setCopied(false), 2000)
-        } catch (err) {
-            toast.error("Failed to copy link")
-        }
-    }
-
-    const handleVisit = (e: React.MouseEvent) => {
-        e.stopPropagation()
-        const fullUrl = getFullUrl()
-        if (fullUrl) window.open(fullUrl, '_blank')
-    }
+    useState(() => {
+        setMounted(true)
+    })
 
     const [namePart, idPart] = slug.split('/')
 
     return (
         <div
             className={cn(
-                "group flex items-center justify-between gap-3 bg-black hover:bg-black/90 px-4 py-2.5 rounded-full transition-all duration-200 cursor-pointer shadow-lg shadow-black/5",
+                "flex items-center gap-3 bg-black/40 px-5 py-2.5 rounded-full border border-white/5 shadow-lg shadow-black/5 min-w-0",
                 className
             )}
-            onClick={handleCopy}
-            title="Click to copy"
         >
-            <div className="flex items-center gap-1 min-w-0">
-                <span className="text-[10px] font-bold text-white/40 tracking-widest uppercase">
-                    {typeof window !== 'undefined' ?
-                        window.location.host.replace('www.', '') :
-                        'frome.io'}/
+            <div className="flex items-center gap-0.5 min-w-0 flex-1 overflow-hidden">
+                <span className="text-[9px] font-bold text-white/30 tracking-tight uppercase shrink-0">
+                    {mounted ? window.location.host.replace('www.', '') : 'frome.io'}/
                 </span>
-                <span className="text-[11px] font-bold text-[#00C975] tracking-widest truncate">
+                <span className="text-[11px] font-black text-[#00C975] tracking-tight truncate flex-1 min-w-0">
                     {namePart}
                 </span>
-                <span className="text-[11px] font-bold text-white/60 tracking-widest">
-                    /{idPart}
+                <span className="text-[10px] font-bold text-white/50 tracking-tight shrink-0">
+                    {idPart && `/${idPart.slice(0, 4)}...`}
                 </span>
-            </div>
-
-            <div className="flex items-center shrink-0">
-                {copied ? (
-                    <Check className="w-3.5 h-3.5 text-[#00C975] animate-in zoom-in duration-200" />
-                ) : (
-                    <Copy className="w-3.5 h-3.5 text-white/60 group-hover:text-white transition-colors" />
-                )}
             </div>
         </div>
     )

@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/admin-auth'
 import { revalidatePath } from 'next/cache'
 
@@ -11,7 +12,7 @@ export async function getContacts() {
         const { data, error } = await supabase
             .from('support_contacts')
             .select('*')
-            .order('contact_type', { ascending: true })
+        //.order('contact_type', { ascending: true }) // Order might not be necessary or field might be different
 
         if (error) throw error
 
@@ -26,7 +27,7 @@ export async function updateContact(contactType: string, contactValue: string, l
     try {
         await requireAdmin()
 
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         const updateData: any = { contact_value: contactValue }
         if (label) updateData.label = label

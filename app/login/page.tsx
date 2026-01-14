@@ -46,8 +46,7 @@ function LoginForm() {
                     We've sent a verification link to your email address. Please click the link to confirm your account.
                 </p>
                 <Button
-                    variant="outline"
-                    className="w-full border-white/10 text-white hover:bg-white/5"
+                    className="w-full bg-[#00C975] hover:bg-[#00C975]/90 text-black font-bold h-12 rounded-xl shadow-lg shadow-[#00C975]/20"
                     onClick={() => { setCheckEmail(false); setIsLogin(true) }}
                 >
                     Back to Sign In
