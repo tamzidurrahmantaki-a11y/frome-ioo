@@ -203,4 +203,3 @@ function AdminSidebarInternal({ children, user }: AdminSidebarProps) {
 export function AdminSidebar(props: AdminSidebarProps) {
     return <AdminSidebarInternal {...props} />
 }
-// trigger deployment after making repo public
